@@ -1,0 +1,7 @@
+PUT http://localhost:5000/PhilBookst/posts/5f5cbf4a88e16f360581e2b5
+
+Content-Type: application/json
+{
+  "title": "test 3",
+  "body": "this is another test"
+}

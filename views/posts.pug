@@ -1,0 +1,13 @@
+extends index
+
+block posts
+  h1 Posts
+  for post in posts
+    .posts(id=post._id)
+      .author= post.author
+      .created= post.createdAt
+      .title= post.title
+      .postBody= post.body
+    .comments
+      for comment in post.comments
+        .comment= comment
