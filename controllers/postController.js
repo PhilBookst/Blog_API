@@ -1,18 +1,28 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
-const Post = require('../models/posts');
 const Posts = require('../models/posts');
+const Users = require('../models/user');
 
 exports.getAll = async (req, res, next) => {
 
   try {
 
     const { username } = req.params;
-    await User.findOne({ username }).populate('posts').exec((err, user) => {
-      return res.json(user.posts);
-    });
     
+    const user = await User.findOne({ username }, err => {});
+
+    await Posts.find({ author: user._id }, (err, data) => {
+      
+      return Posts.populate(data, {
+        path: 'author',
+        select: 'username -_id',
+        model: 'Users'
+      }).then(posts => res.json(posts));
+
+    })
+
+
   } catch (error) {
     next(error);
   }
@@ -44,7 +54,7 @@ exports.addOne = async (req, res, next) => {
     await User.findOne({ username }, (err, user) => {
       if(err) console.log(err);
 
-      const post = new Post({
+      const post = new Posts({
         author: user._id,
         title,
         body,
@@ -71,7 +81,7 @@ exports.updateOne = async (req, res, next) => {
     const { postid } = req.params;
     const { title, body } = req.body;
 
-    await Post.updateOne({ _id: postid }, { title, body }, (err) => {});
+    await Posts.updateOne({ _id: postid }, { title, body }, (err) => {});
     return res.json({ message: 'Success'});
 
   } catch (error) {
